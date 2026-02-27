@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>奢り奢られメーター 💕</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #FF6B9D;
+    --blue: #5B8DEE;
+    --cream: #FFF8F0;
+    --soft-yellow: #FFE566;
+    --mint: #8BDEBC;
+    --dark: #2D2D2D;
+    --card-bg: rgba(255,255,255,0.85);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,107,157,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(91,141,238,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(255,229,102,0.1) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .floating-hearts {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .floating-hearts span {
+    position: absolute;
+    font-size: 1.2rem;
+    opacity: 0.15;
+    animation: float linear infinite;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.15; }
+    90% { opacity: 0.15; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  header {
+    text-align: center;
+    padding: 30px 0 20px;
+  }
+
+  header h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--dark);
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+
+  header h1 span.pink { color: var(--pink); }
+  header h1 span.blue { color: var(--blue); }
+
+  header p {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 6px;
+  }
+
+  /* ====== SETUP MODAL ====== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(45,45,45,0.6);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal {
+    background: white;
+    border-radius: 28px;
+    padding: 36px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .modal h2 {
+    font-size: 1.4rem;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 24px;
+    color: var(--dark);
+  }
+
+  .setup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .setup-person {
+    background: var(--cream);
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .setup-person h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .setup-person h3.pink { color: var(--pink); }
+  .setup-person h3.blue { color: var(--blue); }
+
+  .input-row {
+    margin-bottom: 10px;
+  }
+
+  .input-row label {
+    font-size: 0.75rem;
+    color: #888;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .input-row input {
+    width: 100%;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .input-row input:focus {
+    border-color: var(--pink);
+  }
+
+  .input-row.name-row input:focus {
+    border-color: var(--pink);
+  }
+
+  .modal-actions {
+    margin-top: 24px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 14px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-default {
+    background: #f0f0f0;
+    color: #666;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--pink), #FF8EC4);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255,107,157,0.35);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(255,107,157,0.5);
+    transform: translateY(-1px);
+  }
+
+  /* ====== MAIN APP ====== */
+  .main-app { display: none; }
+  .main-app.visible { display: block; }
+
+  /* characters area */
+  .characters-section {
+    background: var(--card-bg);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+  }
+
+  .characters-row {
+    display: flex;
+    flex-direction: row !important;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .balance-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .character-card {
+    flex: 0 0 auto;
+    text-align: center;
+    width: 100px;
+  }
+
+  .character-name {
+    font-size: 1rem;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .character-name.pink { color: var(--pink); }
+  .character-name.blue { color: var(--blue); }
+
+  .character-svg-wrap {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 110px;
+    position: relative;
+  }
+
+  .character-svg-wrap svg {
+    transition: all 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
+  }
+
+
+  .bmi-label {
+    font-size: 0.7rem;
+    color: #aaa;
+    margin-top: 10px;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .bmi-value {
+    font-size: 2rem;
+    font-weight: 900;
+    line-height: 1;
+    transition: color 0.8s ease;
+  }
+
+  .bmi-comment {
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-top: 2px;
+    transition: color 0.8s ease;
+  }
+
+  .heart-icon {
+    font-size: 1.8rem;
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+
+  .balance-display {
+    background: linear-gradient(135deg, rgba(255,107,157,0.1), rgba(91,141,238,0.1));
+    border-radius: 16px;
+    padding: 10px 16px;
+    text-align: center;
+    min-width: 120px;
+  }
+
+  .balance-label {
+    font-size: 0.7rem;
+    color: #aaa;
+  }
+
+  .balance-amount {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--dark);
+  }
+
+  /* ====== SCORE BAR ====== */
+  .score-bar-section {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 20px 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+  }
+
+  .score-bar-title {
+    font-size: 0.85rem;
+    color: #888;
+    text-align: center;
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+
+  .score-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .score-bar-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    width: 50px;
+    text-align: center;
+  }
+  .score-bar-name.pink { color: var(--pink); }
+  .score-bar-name.blue { color: var(--blue); }
+
+  .score-bar-track {
+    flex: 1;
+    height: 22px;
+    background: #f0f0f0;
+    border-radius: 11px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+  }
+
+  .score-bar-fill-left {
+    height: 100%;
+    background: linear-gradient(to right, #FF8EC4, var(--pink));
+    border-radius: 11px 0 0 11px;
+    transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+    flex-shrink: 0;
+  }
+
+  .score-bar-fill-right {
+    height: 100%;
+    background: linear-gradient(to left, #7AABF5, var(--blue));
+    border-radius: 0 11px 11px 0;
+    transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+    flex-shrink: 0;
+  }
+
+  .bar-pct {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: white;
+    left: 6px;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    pointer-events: none;
+  }
+
+  .bar-pct-right {
+    left: auto;
+    right: 6px;
+  }
+
+  .score-bar-fill-left,
+  .score-bar-fill-right {
+    position: relative;
+  }
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 28px;
+    background: white;
+    border-radius: 2px;
+    z-index: 2;
+  }
+
+  /* ====== INPUT SECTION ====== */
+  .input-section {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+  }
+
+  .input-section h3 {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--dark);
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .add-record-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 10px;
+    align-items: end;
+  }
+
+  .form-group label {
+    font-size: 0.75rem;
+    color: #888;
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+
+  .form-group select,
+  .form-group input {
+    width: 100%;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 0.9rem;
+    background: white;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group select:focus,
+  .form-group input:focus {
+    border-color: var(--pink);
+  }
+
+  .add-btn {
+    background: linear-gradient(135deg, var(--soft-yellow), #FFD000);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(255,229,102,0.4);
+    white-space: nowrap;
+  }
+
+  .add-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,229,102,0.5); }
+  .add-btn:active { transform: scale(0.95); }
+
+  /* ====== HISTORY ====== */
+  .history-section {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    backdrop-filter: blur(10px);
+  }
+
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .history-header h3 {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--dark);
+  }
+
+  .clear-btn {
+    background: none;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    padding: 4px 12px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: #aaa;
+    transition: all 0.2s;
+  }
+  .clear-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border-radius: 14px;
+    padding: 12px 16px;
+    animation: slideIn 0.3s ease;
+    border-left: 4px solid transparent;
+  }
+
+  .history-item.pink { border-left-color: var(--pink); }
+  .history-item.blue { border-left-color: var(--blue); }
+
+  @keyframes slideIn {
+    from { transform: translateY(-10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .history-left { display: flex; align-items: center; gap: 10px; }
+
+  .history-who {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 8px;
+  }
+
+  .history-who.pink { background: rgba(255,107,157,0.1); color: var(--pink); }
+  .history-who.blue { background: rgba(91,141,238,0.1); color: var(--blue); }
+
+  .history-desc {
+    font-size: 0.85rem;
+    color: var(--dark);
+  }
+
+  .history-amount {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .history-delete {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+    margin-left: 8px;
+  }
+  .history-delete:hover { opacity: 1; }
+
+  .empty-history {
+    text-align: center;
+    color: #ccc;
+    font-size: 0.9rem;
+    padding: 30px;
+  }
+
+  /* ====== STATS ROW ====== */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .stat-card .label {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+
+  .stat-card .value {
+    font-size: 1.3rem;
+    font-weight: 900;
+  }
+
+  .stat-card.pink .value { color: var(--pink); }
+  .stat-card.blue .value { color: var(--blue); }
+
+  .settings-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    z-index: 10;
+    transition: all 0.2s;
+  }
+  .settings-btn:hover { transform: rotate(30deg); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.6rem; }
+    .add-record-form { grid-template-columns: 1fr 1fr; }
+    .add-record-form .add-btn { grid-column: span 2; }
+    .characters-row { flex-direction: row !important; gap: 10px; }
+    .character-svg-wrap { height: 160px; }
+  }
+</style>
+</head>
+<body>
+
+
+<!-- Floating hearts -->
+<div class="floating-hearts" id="floatingHearts"></div>
+
+<!-- Settings button -->
+<button class="settings-btn" onclick="openSettings()" title="設定">⚙️</button>
+
+<!-- Setup Modal -->
+<div class="modal-overlay" id="setupModal">
+  <div class="modal">
+    <h2>💕 初期設定</h2>
+    <div class="setup-grid">
+      <div class="setup-person">
+        <h3 class="pink">👩 彼女</h3>
+        <div class="input-row name-row">
+          <label>名前</label>
+          <input type="text" id="name1" placeholder="例：さくら" value="さくら">
+        </div>
+        <div class="input-row">
+          <label>身長 (cm)</label>
+          <input type="number" id="height1" placeholder="160" value="160">
+        </div>
+        <div class="input-row">
+          <label>体重 (kg)</label>
+          <input type="number" id="weight1" placeholder="50" value="50">
+        </div>
+      </div>
+      <div class="setup-person">
+        <h3 class="blue">👨 彼氏</h3>
+        <div class="input-row">
+          <label>名前</label>
+          <input type="text" id="name2" placeholder="例：たろう" value="たろう">
+        </div>
+        <div class="input-row">
+          <label>身長 (cm)</label>
+          <input type="number" id="height2" placeholder="175" value="175">
+        </div>
+        <div class="input-row">
+          <label>体重 (kg)</label>
+          <input type="number" id="weight2" placeholder="65" value="65">
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-default" onclick="useDefaults()">デフォルトで始める</button>
+      <button class="btn btn-primary" onclick="startApp()">💕 スタート！</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div class="main-app" id="mainApp">
+  <div class="container">
+    <header>
+      <h1>デート代</h1>
+      <p>奢り❤️奢られ💙メーター</p>
+    </header>
+
+    <!-- Characters -->
+    <div class="characters-section">
+      <div class="characters-row">
+        <div class="character-card">
+          <div class="character-name pink" id="displayName1">さくら</div>
+          <div class="character-svg-wrap">
+            <svg id="svg1" viewBox="0 0 80 180" width="56" height="126" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+          <div class="bmi-label">BMI</div>
+          <div class="bmi-value" id="bmi1">19.5</div>
+          <div class="bmi-comment" id="bmiComment1">ふつう</div>
+        </div>
+
+        <div class="character-card">
+          <div class="character-name blue" id="displayName2">たろう</div>
+          <div class="character-svg-wrap">
+            <svg id="svg2" viewBox="0 0 80 180" width="56" height="126" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+          <div class="bmi-label">BMI</div>
+          <div class="bmi-value" id="bmi2">21.2</div>
+          <div class="bmi-comment" id="bmiComment2">ふつう</div>
+        </div>
+      </div>
+
+      <div class="balance-row">
+        <div class="heart-icon">💕</div>
+        <div class="balance-display">
+          <div class="balance-label">差額</div>
+          <div class="balance-amount" id="balanceDisplay">¥0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Score bar -->
+    <div class="score-bar-section">
+      <div class="score-bar-title">奢り合計バランス</div>
+      <div class="score-bar-wrap">
+        <span class="score-bar-name pink" id="barName1">さくら</span>
+        <div class="score-bar-track">
+          <div class="score-bar-fill-left" id="barLeft" style="width:50%"><span class="bar-pct" id="barPct1"></span></div>
+          <div class="score-bar-fill-right" id="barRight" style="width:50%"><span class="bar-pct bar-pct-right" id="barPct2"></span></div>
+          <div class="score-bar-center"></div>
+        </div>
+        <span class="score-bar-name blue" id="barName2">たろう</span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card pink">
+        <div class="label" id="statLabel1">さくらの奢り合計</div>
+        <div class="value" id="statValue1">¥0</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="label" id="statLabel2">たろうの奢り合計</div>
+        <div class="value" id="statValue2">¥0</div>
+      </div>
+    </div>
+
+    <!-- Add Record -->
+    <div class="input-section">
+      <h3>✨ 奢りを記録する</h3>
+      <div class="add-record-form">
+        <div class="form-group">
+          <label>誰が奢った？</label>
+          <select id="payer">
+            <option value="1">👩 さくら</option>
+            <option value="2">👨 たろう</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>金額 (円)</label>
+          <input type="number" id="amount" placeholder="例：3000" min="1">
+        </div>
+        <div class="form-group">
+          <label>メモ</label>
+          <input type="text" id="memo" placeholder="例：ランチ代">
+        </div>
+        <button class="add-btn" onclick="addRecord()">✚ 追加</button>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="history-section">
+      <div class="history-header">
+        <h3>📋 履歴</h3>
+        <button class="clear-btn" onclick="clearAll()">全削除</button>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="empty-history">まだ記録がありません<br>最初の奢りを記録しよう！💕</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ====== STATE ======
+let state = {
+  person1: { name: 'さくら', height: 160, weight: 50, gender: 'female', baseWeight: 50 },
+  person2: { name: 'たろう', height: 175, weight: 65, gender: 'male', baseWeight: 65 },
+  records: [],
+  total1: 0,
+  total2: 0,
+};
+
+// ====== FLOATING HEARTS ======
+function createFloatingHearts() {
+  const container = document.getElementById('floatingHearts');
+  const emojis = ['💕','💗','💙','⭐','✨','💫'];
+  for (let i = 0; i < 12; i++) {
+    const span = document.createElement('span');
+    span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    span.style.left = Math.random() * 100 + '%';
+    span.style.animationDuration = (8 + Math.random() * 12) + 's';
+    span.style.animationDelay = (Math.random() * 15) + 's';
+    span.style.fontSize = (0.8 + Math.random() * 1.2) + 'rem';
+    container.appendChild(span);
+  }
+}
+createFloatingHearts();
+
+// ====== SETUP ======
+function useDefaults() {
+  startApp();
+}
+
+function startApp() {
+  const name1 = document.getElementById('name1').value || 'さくら';
+  const name2 = document.getElementById('name2').value || 'たろう';
+  const height1 = parseFloat(document.getElementById('height1').value) || 160;
+  const weight1 = parseFloat(document.getElementById('weight1').value) || 50;
+  const height2 = parseFloat(document.getElementById('height2').value) || 175;
+  const weight2 = parseFloat(document.getElementById('weight2').value) || 65;
+
+  state.person1 = { name: name1, height: height1, weight: weight1, gender: 'female', baseWeight: weight1 };
+  state.person2 = { name: name2, height: height2, weight: weight2, gender: 'male', baseWeight: weight2 };
+
+  document.getElementById('setupModal').style.display = 'none';
+  document.getElementById('mainApp').classList.add('visible');
+
+  updateNames();
+  renderCharacters();
+}
+
+function openSettings() {
+  document.getElementById('setupModal').style.display = 'flex';
+}
+
+function updateNames() {
+  const n1 = state.person1.name;
+  const n2 = state.person2.name;
+  document.getElementById('displayName1').textContent = n1;
+  document.getElementById('displayName2').textContent = n2;
+  document.getElementById('barName1').textContent = n1;
+  document.getElementById('barName2').textContent = n2;
+  document.getElementById('statLabel1').textContent = n1 + 'の奢り合計';
+  document.getElementById('statLabel2').textContent = n2 + 'の奢り合計';
+  document.getElementById('payer').innerHTML = `
+    <option value="1">👩 ${n1}</option>
+    <option value="2">👨 ${n2}</option>
+  `;
+}
+
+// ====== SVG CHARACTER DRAWING (いらすとや風) ======
+function drawCharacter(svgId, gender, bmi, color) {
+  const svg = document.getElementById(svgId);
+
+  // BMI-based body shape scaling
+  // Normal BMI ~22, thin = 16, fat = 30
+  // fatness: 0=thin, 0.5=normal, 1=fat
+  const fatness = Math.max(0, Math.min(1, (bmi - 16) / 18));
+
+  // thinness: 痩せ方向の強調 (BMI18.5以下で最大1)
+  const thinness = Math.max(0, Math.min(1, (18.5 - bmi) / 4));
+
+  const cx = 40;
+  const skin = '#F5C99A';
+  const skinShade = '#E8A870';
+  const outlineW = 1.5;
+  const outline = '#555';
+
+  // 太るほど横幅ドーン、痩せるほど縦長ヒョロヒョロ
+  const bodyScaleX = (0.75 + fatness * 1.1) * (1 - thinness * 0.3);
+  const bodyScaleY = (0.9 + fatness * 0.25) * (1 + thinness * 0.25);
+  const headScale  = (0.88 + fatness * 0.36) * (1 - thinness * 0.15);
+
+  const headR = 17 * headScale;
+  const headCY = 22;
+  const neckY = headCY + headR - 2;
+  const neckH = 7;
+  const bodyTopY = neckY + neckH;
+  const bodyH = 52 * bodyScaleY;
+  const bodyBottomY = bodyTopY + bodyH;
+  // 痩せると脚が長く見える
+  const legH = 42 + thinness * 14;
+  const totalH = bodyBottomY + legH + 14;
+
+  svg.setAttribute('viewBox', `0 0 80 ${Math.ceil(totalH)}`);
+  svg.setAttribute('height', 126);
+  svg.setAttribute('width', Math.round(80 * (126 / totalH)));
+
+  const shoulderHW = (gender === 'male' ? 20 : 16) * bodyScaleX * (1 - thinness * 0.2);
+  const waistHW = (gender === 'male' ? 13 : 11) * bodyScaleX;
+  const hipHW = (gender === 'male' ? 15 : 19) * bodyScaleX * (1 - thinness * 0.15);
+
+  const shirtColor = color;
+  const pantsColor = gender === 'male' ? '#5B78CC' : '#E8608A';
+  const shoeColor = '#4A3728';
+  const hairColor = gender === 'male' ? '#3D2B1F' : '#5C3317';
+
+  let s = '';
+
+  // Shadow
+  s += `<ellipse cx="${cx}" cy="${totalH - 4}" rx="${14 * bodyScaleX}" ry="4" fill="rgba(0,0,0,0.08)"/>`;
+
+  // Legs — 太るほど太く、痩せるほど細く
+  const legW = (7 + fatness * 7) * (1 - thinness * 0.4);
+  const legGap = 3 + fatness * 2;
+  s += `<path d="M ${cx - legGap - legW},${bodyBottomY - 2} Q ${cx - legGap - legW - fatness * 3},${bodyBottomY + legH * 0.5} ${cx - legGap - legW + 1},${bodyBottomY + legH} L ${cx - legGap + 1},${bodyBottomY + legH} Q ${cx - legGap + fatness * 2},${bodyBottomY + legH * 0.5} ${cx - legGap},${bodyBottomY - 2} Z" fill="${pantsColor}" stroke="${outline}" stroke-width="${outlineW}" stroke-linejoin="round"/>`;
+  s += `<path d="M ${cx + legGap},${bodyBottomY - 2} Q ${cx + legGap - fatness * 2},${bodyBottomY + legH * 0.5} ${cx + legGap - 1},${bodyBottomY + legH} L ${cx + legGap + legW - 1},${bodyBottomY + legH} Q ${cx + legGap + legW + fatness * 3},${bodyBottomY + legH * 0.5} ${cx + legGap + legW},${bodyBottomY - 2} Z" fill="${pantsColor}" stroke="${outline}" stroke-width="${outlineW}" stroke-linejoin="round"/>`;
+
+  // Shoes
+  s += `<ellipse cx="${cx - legGap - legW * 0.5 + 1}" cy="${bodyBottomY + legH}" rx="${legW * 1.1 + 2}" ry="5" fill="${shoeColor}" stroke="${outline}" stroke-width="${outlineW}"/>`;
+  s += `<ellipse cx="${cx + legGap + legW * 0.5 - 1}" cy="${bodyBottomY + legH}" rx="${legW * 1.1 + 2}" ry="5" fill="${shoeColor}" stroke="${outline}" stroke-width="${outlineW}"/>`;
+
+  // Body
+  const belly = fatness > 0.25 ? (fatness - 0.25) * 32 : 0;
+  s += `<path d="M ${cx - shoulderHW},${bodyTopY} C ${cx - shoulderHW - belly},${bodyTopY + bodyH * 0.35} ${cx - hipHW - belly * 0.5},${bodyTopY + bodyH * 0.65} ${cx - hipHW},${bodyBottomY} L ${cx + hipHW},${bodyBottomY} C ${cx + hipHW + belly * 0.5},${bodyTopY + bodyH * 0.65} ${cx + shoulderHW + belly},${bodyTopY + bodyH * 0.35} ${cx + shoulderHW},${bodyTopY} Z" fill="${shirtColor}" stroke="${outline}" stroke-width="${outlineW}" stroke-linejoin="round"/>`;
+  s += `<path d="M ${cx - 7},${bodyTopY} Q ${cx},${bodyTopY + 8} ${cx + 7},${bodyTopY}" stroke="${outline}" stroke-width="${outlineW}" fill="none"/>`;
+
+  // Skirt (female)
+  if (gender === 'female') {
+    const skirtTopW = hipHW + 2;
+    const skirtBotW = hipHW + 14 + fatness * 8;
+    const skirtH = 20 + fatness * 5;
+    s += `<path d="M ${cx - skirtTopW},${bodyBottomY - 4} L ${cx - skirtBotW},${bodyBottomY + skirtH} Q ${cx},${bodyBottomY + skirtH + 3} ${cx + skirtBotW},${bodyBottomY + skirtH} L ${cx + skirtTopW},${bodyBottomY - 4} Z" fill="${shirtColor}" stroke="${outline}" stroke-width="${outlineW}" stroke-linejoin="round" opacity="0.9"/>`;
+  }
+
+  // Arms — 太ると太く・広がる、痩せると細くなる
+  const armW = (7 + fatness * 6) * (1 - thinness * 0.45);
+  const armH = (38 + fatness * 4) * (1 + thinness * 0.15);
+  const armSpread = fatness > 0.45 ? 8 + fatness * 4 : 3;
+  s += `<path d="M ${cx - shoulderHW + 2},${bodyTopY + 5} C ${cx - shoulderHW - armSpread - armW},${bodyTopY + armH * 0.4} ${cx - shoulderHW - armSpread - armW + 2},${bodyTopY + armH * 0.8} ${cx - shoulderHW - armSpread + 2},${bodyTopY + armH} C ${cx - shoulderHW - armSpread + armW * 0.5 + 2},${bodyTopY + armH * 0.8} ${cx - shoulderHW + armW * 0.3},${bodyTopY + armH * 0.4} ${cx - shoulderHW + armW * 0.5},${bodyTopY + 5} Z" fill="${shirtColor}" stroke="${outline}" stroke-width="${outlineW}" stroke-linejoin="round"/>`;
+  s += `<path d="M ${cx + shoulderHW - 2},${bodyTopY + 5} C ${cx + shoulderHW + armSpread + armW},${bodyTopY + armH * 0.4} ${cx + shoulderHW + armSpread + armW - 2},${bodyTopY + armH * 0.8} ${cx + shoulderHW + armSpread - 2},${bodyTopY + armH} C ${cx + shoulderHW + armSpread - armW * 0.5 - 2},${bodyTopY + armH * 0.8} ${cx + shoulderHW - armW * 0.3},${bodyTopY + armH * 0.4} ${cx + shoulderHW - armW * 0.5},${bodyTopY + 5} Z" fill="${shirtColor}" stroke="${outline}" stroke-width="${outlineW}" stroke-linejoin="round"/>`;
+  s += `<circle cx="${cx - shoulderHW - armSpread + 2}" cy="${bodyTopY + armH + 4}" r="${armW * 0.65}" fill="${skin}" stroke="${outline}" stroke-width="${outlineW}"/>`;
+  s += `<circle cx="${cx + shoulderHW + armSpread - 2}" cy="${bodyTopY + armH + 4}" r="${armW * 0.65}" fill="${skin}" stroke="${outline}" stroke-width="${outlineW}"/>`;
+
+  // Neck — 痩せると細く
+  const neckW = (6 + fatness * 4) * (1 - thinness * 0.4);
+  s += `<rect x="${cx - neckW}" y="${neckY}" width="${neckW * 2}" height="${neckH + 2}" rx="${neckW * 0.5}" fill="${skin}" stroke="${outline}" stroke-width="${outlineW}"/>`;
+
+  // Head
+  const headRX = headR * (1 + fatness * 0.12);
+  s += `<ellipse cx="${cx}" cy="${headCY}" rx="${headRX}" ry="${headR}" fill="${skin}" stroke="${outline}" stroke-width="${outlineW}"/>`;
+
+  // Double chin — 太ると強調
+  if (fatness > 0.35) {
+    const chinAmt = (fatness - 0.35) * 2.5;
+    s += `<ellipse cx="${cx}" cy="${headCY + headR - 3}" rx="${headRX * 0.8 * chinAmt}" ry="${5 * chinAmt}" fill="${skinShade}" opacity="0.4"/>`;
+  }
+
+  // Hair
+  if (gender === 'female') {
+    s += `<ellipse cx="${cx}" cy="${headCY - headR * 0.5}" rx="${headRX + 3}" ry="${headR * 0.75}" fill="${hairColor}" stroke="${outline}" stroke-width="${outlineW}"/>`;
+    s += `<ellipse cx="${cx - headRX - 1}" cy="${headCY + 4}" rx="5" ry="${headR * 0.6}" fill="${hairColor}" stroke="${outline}" stroke-width="${outlineW}"/>`;
+    s += `<ellipse cx="${cx + headRX + 1}" cy="${headCY + 4}" rx="5" ry="${headR * 0.6}" fill="${hairColor}" stroke="${outline}" stroke-width="${outlineW}"/>`;
+  } else {
+    s += `<ellipse cx="${cx}" cy="${headCY - headR * 0.4}" rx="${headRX + 1}" ry="${headR * 0.65}" fill="${hairColor}" stroke="${outline}" stroke-width="${outlineW}"/>`;
+    s += `<ellipse cx="${cx - headRX + 1}" cy="${headCY - 4}" rx="5" ry="7" fill="${hairColor}" stroke="${outline}" stroke-width="1"/>`;
+    s += `<ellipse cx="${cx + headRX - 1}" cy="${headCY - 4}" rx="5" ry="7" fill="${hairColor}" stroke="${outline}" stroke-width="1"/>`;
+  }
+
+  // Eyes
+  const eyeY = headCY + 2 + fatness * 1.5;
+  const eyeSpread = 6;
+  const eyeSquint = fatness * 0.4;
+  const eyeRX = 3.5 - eyeSquint;
+  const eyeRY = 4 - eyeSquint * 2;
+  s += `<ellipse cx="${cx - eyeSpread}" cy="${eyeY}" rx="${eyeRX}" ry="${eyeRY}" fill="#2D1A0E"/>`;
+  s += `<ellipse cx="${cx + eyeSpread}" cy="${eyeY}" rx="${eyeRX}" ry="${eyeRY}" fill="#2D1A0E"/>`;
+  s += `<circle cx="${cx - eyeSpread + 1}" cy="${eyeY - 1.2}" r="1.3" fill="white"/>`;
+  s += `<circle cx="${cx + eyeSpread + 1}" cy="${eyeY - 1.2}" r="1.3" fill="white"/>`;
+
+  // Eyebrows
+  const browY = eyeY - eyeRY - 2.5;
+  const browCurve = fatness > 0.6 ? 1 : -1;
+  s += `<path d="M ${cx - eyeSpread - 3.5} ${browY + browCurve} Q ${cx - eyeSpread} ${browY - 2} ${cx - eyeSpread + 3.5} ${browY + browCurve}" stroke="#3D2B1F" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+  s += `<path d="M ${cx + eyeSpread - 3.5} ${browY + browCurve} Q ${cx + eyeSpread} ${browY - 2} ${cx + eyeSpread + 3.5} ${browY + browCurve}" stroke="#3D2B1F" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+
+  // Mouth
+  const mouthY = headCY + headR * 0.45;
+  const smileD = fatness < 0.6 ? 2.5 : 0.5;
+  s += `<path d="M ${cx - 4} ${mouthY} Q ${cx} ${mouthY + smileD} ${cx + 4} ${mouthY}" stroke="#C07050" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+
+  // Blush
+  const blushR = 3.5 + fatness * 2;
+  const blushO = 0.25 + fatness * 0.2;
+  s += `<circle cx="${cx - eyeSpread - 1}" cy="${eyeY + 4}" r="${blushR}" fill="#FF9999" opacity="${blushO}"/>`;
+  s += `<circle cx="${cx + eyeSpread + 1}" cy="${eyeY + 4}" r="${blushR}" fill="#FF9999" opacity="${blushO}"/>`;
+
+  // Sweat drops if very fat
+  if (fatness > 0.75) {
+    const sweatO = (fatness - 0.75) * 4;
+    s += `<ellipse cx="${cx + headRX + 5}" cy="${headCY - 5}" rx="2" ry="5" fill="#7DD6F5" opacity="${sweatO}"/>`;
+    s += `<circle cx="${cx + headRX + 5}" cy="${headCY - 11}" r="3" fill="#7DD6F5" opacity="${sweatO}"/>`;
+  }
+
+  svg.innerHTML = s;
+}
+
+// ====== BMI CALCULATION ======
+function getBMI(person) {
+  const h = person.height / 100;
+  return person.weight / (h * h);
+}
+
+// ====== RENDER ======
+function renderCharacters() {
+  const bmi1 = getBMI(state.person1);
+  const bmi2 = getBMI(state.person2);
+
+  drawCharacter('svg1', state.person1.gender, bmi1, '#FF6B9D');
+  drawCharacter('svg2', state.person2.gender, bmi2, '#5B8DEE');
+
+  updateBMIDisplay('bmi1', 'bmiComment1', bmi1);
+  updateBMIDisplay('bmi2', 'bmiComment2', bmi2);
+}
+
+function getBMIColor(bmi) {
+  // 痩せ(青) ←→ 普通(緑) ←→ 太り(赤) のグラデーション
+  if (bmi < 18.5) {
+    // 痩せ: 青系
+    const t = Math.max(0, (18.5 - bmi) / 4); // 0〜1
+    const r = Math.round(59 + t * (30 - 59));
+    const g = Math.round(130 + t * (100 - 130));
+    const b = Math.round(246 + t * (220 - 246));
+    return `rgb(${Math.round(59 - t*20)}, ${Math.round(130 - t*20)}, ${Math.round(246)})`;
+  } else if (bmi < 25) {
+    // 普通: 緑〜オレンジ
+    const t = (bmi - 18.5) / 6.5;
+    const r = Math.round(80 + t * (255 - 80));
+    const g = Math.round(200 - t * (200 - 160));
+    const b = Math.round(100 - t * 100);
+    return `rgb(${r}, ${g}, ${b})`;
+  } else {
+    // 太り: オレンジ〜赤
+    const t = Math.min(1, (bmi - 25) / 10);
+    const r = 255;
+    const g = Math.round(160 - t * 160);
+    const b = 0;
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+}
+
+function getBMIComment(bmi) {
+  if (bmi < 16)   return '💀 ガリガリ';
+  if (bmi < 18.5) return '🥢 痩せ型';
+  if (bmi < 22)   return '✨ 標準';
+  if (bmi < 25)   return '😊 普通';
+  if (bmi < 28)   return '🍔 ぽっちゃり';
+  if (bmi < 32)   return '🐷 太り気味';
+  return               '🐘 かなり太め';
+}
+
+function updateBMIDisplay(bmiId, commentId, bmi) {
+  const color = getBMIColor(bmi);
+  const valEl = document.getElementById(bmiId);
+  const comEl = document.getElementById(commentId);
+  if (valEl) {
+    valEl.textContent = bmi.toFixed(1);
+    valEl.style.color = color;
+  }
+  if (comEl) {
+    comEl.textContent = getBMIComment(bmi);
+    comEl.style.color = color;
+  }
+  // SVGキャラにも色味を反映（svgのfilterで色調整）
+  const svgId = bmiId === 'bmi1' ? 'svg1' : 'svg2';
+  const svg = document.getElementById(svgId);
+  if (svg) {
+    const fatness = Math.max(0, Math.min(1, (bmi - 16) / 18));
+    // 痩せ→青っぽく、太り→赤っぽく
+    if (bmi < 18.5) {
+      const t = Math.min(1, (18.5 - bmi) / 4);
+      svg.style.filter = `drop-shadow(0 4px 12px rgba(0,0,0,0.1)) hue-rotate(${t * -40}deg) saturate(${1 + t * 0.3})`;
+    } else if (bmi > 23) {
+      const t = Math.min(1, (bmi - 23) / 9);
+      svg.style.filter = `drop-shadow(0 4px 12px rgba(0,0,0,0.1)) hue-rotate(${t * 30}deg) saturate(${1 + t * 0.5})`;
+    } else {
+      svg.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.1))';
+    }
+  }
+}
+function updateStats() {
+  const total1 = state.total1;
+  const total2 = state.total2;
+  const totalAll = total1 + total2;
+
+  document.getElementById('statValue1').textContent = '¥' + total1.toLocaleString();
+  document.getElementById('statValue2').textContent = '¥' + total2.toLocaleString();
+
+  // Balance
+  const diff = total1 - total2;
+  const absOgori = Math.abs(diff);
+  const ogoriName = diff > 0 ? state.person1.name : (diff < 0 ? state.person2.name : '');
+  document.getElementById('balanceDisplay').textContent = diff === 0 ? '¥0' :
+    (diff > 0 ? '+' : '-') + '¥' + absOgori.toLocaleString();
+
+  // Bar — 二人の合計を100%とした比率で表示
+  if (totalAll === 0) {
+    document.getElementById('barLeft').style.width = '50%';
+    document.getElementById('barRight').style.width = '50%';
+    document.getElementById('barPct1').textContent = '';
+    document.getElementById('barPct2').textContent = '';
+  } else {
+    const pct1 = (total1 / totalAll) * 100;
+    const pct2 = (total2 / totalAll) * 100;
+    document.getElementById('barLeft').style.width = pct1 + '%';
+    document.getElementById('barRight').style.width = pct2 + '%';
+    document.getElementById('barPct1').textContent = pct1 >= 10 ? Math.round(pct1) + '%' : '';
+    document.getElementById('barPct2').textContent = pct2 >= 10 ? Math.round(pct2) + '%' : '';
+  }
+
+  // Update body weights based on difference
+  // diff = total1(さくらが奢った) - total2(たろうが奢った)
+  // diff > 0 → さくらが多く奢った → さくら痩せ、たろう太る
+  // diff < 0 → たろうが多く奢った → たろう痩せ、さくら太る
+  const maxChange = 0.35;
+  const sensitivity = 200000; // ¥200,000差でmax変化
+
+  // さくら: 自分が多く奢るほど痩せる → diff大きいほどマイナス
+  const ratio1 = Math.max(-maxChange, Math.min(maxChange, -diff / sensitivity));
+  // たろう: 自分が多く奢るほど痩せる → diff小さい(マイナス)ほどマイナス
+  const ratio2 = Math.max(-maxChange, Math.min(maxChange,  diff / sensitivity));
+
+  state.person1.weight = state.person1.baseWeight * (1 + ratio1);
+  state.person2.weight = state.person2.baseWeight * (1 + ratio2);
+
+  renderCharacters();
+}
+
+// ====== RECORDS ======
+function addRecord() {
+  const payerVal = document.getElementById('payer').value;
+  const amountVal = parseFloat(document.getElementById('amount').value);
+  const memoVal = document.getElementById('memo').value || '食事代';
+
+  if (!amountVal || amountVal <= 0) {
+    document.getElementById('amount').style.borderColor = 'var(--pink)';
+    setTimeout(() => document.getElementById('amount').style.borderColor = '#eee', 1500);
+    return;
+  }
+
+  const record = {
+    id: Date.now(),
+    payer: parseInt(payerVal),
+    amount: amountVal,
+    memo: memoVal,
+    date: new Date().toLocaleDateString('ja-JP'),
+  };
+
+  state.records.unshift(record);
+
+  if (record.payer === 1) state.total1 += amountVal;
+  else state.total2 += amountVal;
+
+  document.getElementById('amount').value = '';
+  document.getElementById('memo').value = '';
+
+  renderHistory();
+  updateStats();
+}
+
+function deleteRecord(id) {
+  const idx = state.records.findIndex(r => r.id === id);
+  if (idx === -1) return;
+  const rec = state.records[idx];
+  if (rec.payer === 1) state.total1 -= rec.amount;
+  else state.total2 -= rec.amount;
+  state.records.splice(idx, 1);
+  renderHistory();
+  updateStats();
+}
+
+function clearAll() {
+  if (!confirm('履歴を全部消しますか？')) return;
+  state.records = [];
+  state.total1 = 0;
+  state.total2 = 0;
+  renderHistory();
+  updateStats();
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (state.records.length === 0) {
+    list.innerHTML = '<div class="empty-history">まだ記録がありません<br>最初の奢りを記録しよう！💕</div>';
+    return;
+  }
+
+  list.innerHTML = state.records.map(rec => {
+    const person = rec.payer === 1 ? state.person1 : state.person2;
+    const cls = rec.payer === 1 ? 'pink' : 'blue';
+    const emoji = rec.payer === 1 ? '👩' : '👨';
+    return `
+      <div class="history-item ${cls}">
+        <div class="history-left">
+          <span class="history-who ${cls}">${emoji} ${person.name}</span>
+          <span class="history-desc">${rec.memo}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span class="history-amount">¥${rec.amount.toLocaleString()}</span>
+          <button class="history-delete" onclick="deleteRecord(${rec.id})">🗑</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Enter key for add
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && document.getElementById('amount') === document.activeElement) {
+    addRecord();
+  }
+});
+</script>
+</body>
+</html>
